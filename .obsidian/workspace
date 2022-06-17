@@ -1,0 +1,155 @@
+{
+  "main": {
+    "id": "97f886b5916026a6",
+    "type": "split",
+    "children": [
+      {
+        "id": "b945cebd68bc730f",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "LearnOpenGL/2_HellowTriangle.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d656a668d77628ac",
+    "type": "split",
+    "children": [
+      {
+        "id": "1fdff5a27b9b5dac",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "299e63dfee23b1cd",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "d9dae0422416bca9",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "tag:#version",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "6c98927e5491f4ca",
+    "type": "split",
+    "children": [
+      {
+        "id": "ea4ef8b81c3df600",
+        "type": "tabs",
+        "dimension": 32.873730043541364,
+        "children": [
+          {
+            "id": "194b7fc013f5706d",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "LearnOpenGL/2_HellowTriangle.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "1019a51c34dfd069",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {}
+            }
+          },
+          {
+            "id": "9a35d2ff3d5b1436",
+            "type": "leaf",
+            "state": {
+              "type": "todo",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 1
+      },
+      {
+        "id": "f289ddfc79cc0eec",
+        "type": "tabs",
+        "dimension": 15.312046444121915,
+        "children": [
+          {
+            "id": "a25f5a57196b3a06",
+            "type": "leaf",
+            "state": {
+              "type": "timeline",
+              "state": {}
+            }
+          }
+        ]
+      },
+      {
+        "id": "117e941030dafa8f",
+        "type": "tabs",
+        "dimension": 51.814223512336724,
+        "children": [
+          {
+            "id": "462dd3bca180779f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "图形 1.1 - 渲染流水线.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 361.5,
+    "collapsed": true
+  },
+  "active": "b945cebd68bc730f",
+  "lastOpenFiles": [
+    "LearnOpenGL/2_HellowTriangle.md",
+    "LearnOpenGL/3_Shaders.md",
+    "LearnOpenGL/1_HellowWindow.md",
+    "未命名.md",
+    "1_HellowWindow.cpp.md",
+    "图形 1.1 - 渲染流水线.md",
+    "Assets/图形2.6 色彩空间.jpeg",
+    "代码.md",
+    "LearnOpenGL/LearnOpenGL.pdf",
+    "图形 2.6 伽马校正.md"
+  ]
+}

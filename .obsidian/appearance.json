@@ -1,0 +1,14 @@
+{
+  "cssTheme": "Primary",
+  "theme": "moonstone",
+  "enabledCssSnippets": [
+    "auto-fade-control",
+    "list-outline",
+    "round-checkbox",
+    "tag-flag",
+    "tag-pills",
+    "text-justify",
+    "typora-like-editing"
+  ],
+  "baseFontSize": 21
+}
