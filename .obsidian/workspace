@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "LearnOpenGL/2_HellowTriangle.md",
+            "file": "LearnOpenGL/4_纹理.md",
             "mode": "source",
             "source": false
           }
@@ -70,7 +70,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "LearnOpenGL/2_HellowTriangle.md",
+                "file": "LearnOpenGL/4_纹理.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -141,15 +141,15 @@
   },
   "active": "b945cebd68bc730f",
   "lastOpenFiles": [
-    "LearnOpenGL/2_HellowTriangle.md",
+    "LearnOpenGL/4_纹理.md",
     "LearnOpenGL/3_Shaders.md",
+    "Assets/OpenGL_纹理环绕示例.png",
+    "LearnOpenGL/B站code/未命名.md",
+    "LearnOpenGL/LearnOpenGL.pdf",
+    "LearnOpenGL/2_HellowTriangle.md",
     "LearnOpenGL/1_HellowWindow.md",
     "未命名.md",
     "1_HellowWindow.cpp.md",
-    "图形 1.1 - 渲染流水线.md",
-    "Assets/图形2.6 色彩空间.jpeg",
-    "代码.md",
-    "LearnOpenGL/LearnOpenGL.pdf",
-    "图形 2.6 伽马校正.md"
+    "图形 1.1 - 渲染流水线.md"
   ]
 }
