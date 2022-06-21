@@ -8,6 +8,10 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 
 class Shader {
@@ -83,10 +87,13 @@ public:
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
     }
     void setInt(const std::string &name, int value) const {
-            glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+        glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
     }
     void setFloat(const std::string &name, float value) const {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+    }
+    void setMatrix4(const std::string &name, int numOfMat4, GLboolean transpose, glm::mat4 value) {
+        glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), numOfMat4, transpose, glm::value_ptr(value));
     }
 
 private:
