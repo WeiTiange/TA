@@ -10,7 +10,7 @@
           "type": "markdown",
           "state": {
             "file": "LearnOpenGL/5_坐标系统.md",
-            "mode": "preview",
+            "mode": "source",
             "source": false
           }
         }
@@ -62,7 +62,7 @@
       {
         "id": "ea4ef8b81c3df600",
         "type": "tabs",
-        "dimension": 38.81748071979434,
+        "dimension": 38.81748071979435,
         "children": [
           {
             "id": "194b7fc013f5706d",
@@ -103,7 +103,7 @@
       {
         "id": "117e941030dafa8f",
         "type": "tabs",
-        "dimension": 61.182519280205646,
+        "dimension": 61.18251928020565,
         "children": [
           {
             "id": "462dd3bca180779f",
