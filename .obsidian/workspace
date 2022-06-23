@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "LearnOpenGL/5_坐标系统.md",
+            "file": "LearnOpenGL/6_摄像机.md",
             "mode": "source",
             "source": false
           }
@@ -53,7 +53,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "6c98927e5491f4ca",
@@ -70,7 +71,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "LearnOpenGL/5_坐标系统.md",
+                "file": "LearnOpenGL/6_摄像机.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -126,6 +127,7 @@
   },
   "active": "b945cebd68bc730f",
   "lastOpenFiles": [
+    "LearnOpenGL/6_摄像机.md",
     "LearnOpenGL/5_坐标系统.md",
     "Assets/OpenGL_MipMap.png",
     "Assets/OpenGL_向量取反.png",
@@ -134,7 +136,6 @@
     "Assets/OpenGL_线性过滤.png",
     "Assets/OpenGL_正交投影.png",
     "Assets/OpenGL_透视投影计算.png",
-    "Assets/OpenGL_模型顶点变换过程.png",
-    "Day Planners/Day Planner-20220517.md"
+    "Assets/OpenGL_模型顶点变换过程.png"
   ]
 }
