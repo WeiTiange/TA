@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "LearnOpenGL/6_摄像机.md",
+            "file": "LearnOpenGL/2_HellowTriangle.md",
             "mode": "source",
             "source": false
           }
@@ -53,8 +53,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "6c98927e5491f4ca",
@@ -71,7 +70,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "LearnOpenGL/6_摄像机.md",
+                "file": "LearnOpenGL/2_HellowTriangle.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,15 +126,15 @@
   },
   "active": "b945cebd68bc730f",
   "lastOpenFiles": [
+    "LearnOpenGL/2_HellowTriangle.md",
+    "LearnOpenGL/3_Shaders.md",
+    "LearnOpenGL/4_纹理.md",
+    "LearnOpenGL/1_HellowWindow.md",
+    "LearnOpenGL/OpenGL_渲染.md",
+    "LearnOpenGL/0_词汇表.md",
     "LearnOpenGL/6_摄像机.md",
     "LearnOpenGL/5_坐标系统.md",
     "Assets/OpenGL_MipMap.png",
-    "Assets/OpenGL_向量取反.png",
-    "Assets/OpenGL_向量加减.png",
-    "Assets/OpenGL_纹理环绕示例.png",
-    "Assets/OpenGL_线性过滤.png",
-    "Assets/OpenGL_正交投影.png",
-    "Assets/OpenGL_透视投影计算.png",
-    "Assets/OpenGL_模型顶点变换过程.png"
+    "Assets/OpenGL_向量取反.png"
   ]
 }

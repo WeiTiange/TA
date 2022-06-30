@@ -148,6 +148,7 @@ int main()
     //  ----Texture1----
     // 绑定纹理对象
     unsigned int texture1;
+    stbi_set_flip_vertically_on_load(true);
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
     // 设置环绕、过滤方式
@@ -157,7 +158,6 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // 加载图片
     int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load("./Assets/azi.png", &width, &height, &nrChannels, 0);
     // 生成纹理
     if (data)  {
