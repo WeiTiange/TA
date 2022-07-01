@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "LearnOpenGL/2_HellowTriangle.md",
+            "file": "LearnOpenGL/OpenGL_渲染.md",
             "mode": "source",
             "source": false
           }
@@ -70,7 +70,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "LearnOpenGL/2_HellowTriangle.md",
+                "file": "LearnOpenGL/OpenGL_渲染.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -126,15 +126,15 @@
   },
   "active": "b945cebd68bc730f",
   "lastOpenFiles": [
+    "LearnOpenGL/OpenGL_渲染.md",
+    "LearnOpenGL/LearnOpenGL.pdf",
+    "LearnOpenGL/1_HellowWindow.md",
     "LearnOpenGL/2_HellowTriangle.md",
     "LearnOpenGL/3_Shaders.md",
     "LearnOpenGL/4_纹理.md",
-    "LearnOpenGL/1_HellowWindow.md",
-    "LearnOpenGL/OpenGL_渲染.md",
     "LearnOpenGL/0_词汇表.md",
     "LearnOpenGL/6_摄像机.md",
     "LearnOpenGL/5_坐标系统.md",
-    "Assets/OpenGL_MipMap.png",
-    "Assets/OpenGL_向量取反.png"
+    "Assets/OpenGL_MipMap.png"
   ]
 }
