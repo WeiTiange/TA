@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "LearnOpenGL/OpenGL_渲染.md",
+            "file": "LearnOpenGL/OpenGL_高级功能.md",
             "mode": "source",
             "source": false
           }
@@ -70,7 +70,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "LearnOpenGL/OpenGL_渲染.md",
+                "file": "LearnOpenGL/OpenGL_高级功能.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -126,15 +126,15 @@
   },
   "active": "b945cebd68bc730f",
   "lastOpenFiles": [
+    "LearnOpenGL/OpenGL_高级功能.md",
     "LearnOpenGL/OpenGL_渲染.md",
-    "LearnOpenGL/LearnOpenGL.pdf",
-    "LearnOpenGL/1_HellowWindow.md",
-    "LearnOpenGL/2_HellowTriangle.md",
-    "LearnOpenGL/3_Shaders.md",
-    "LearnOpenGL/4_纹理.md",
-    "LearnOpenGL/0_词汇表.md",
+    "图形 2.4 传统经验光照模型.md",
+    "图形 2.3 HLSL常用函数.md",
+    "图形 2.2 模型与材质基础.md",
+    "图形 2.1 - 色彩空间.md",
+    "图形 1.1 - 渲染流水线.md",
     "LearnOpenGL/6_摄像机.md",
     "LearnOpenGL/5_坐标系统.md",
-    "Assets/OpenGL_MipMap.png"
+    "LearnOpenGL/4_纹理.md"
   ]
 }

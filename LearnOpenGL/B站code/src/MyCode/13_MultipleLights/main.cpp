@@ -27,6 +27,8 @@ using namespace std;
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 // 处理用户输入
 void processInput(GLFWwindow *window);
+// 用户输入(按一次只触发一次)
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 // 计算摄像机俯仰角和偏航角
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 // 滚轮调整FOV来进行缩放
@@ -55,6 +57,8 @@ float fov = 45.0f;
 float maxFov = 45.0f;
 // // 光源位置
 // glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+// 聚光灯开关
+float spotLightSwitch = 1.0;
 // ---------------------------
 
 
@@ -128,7 +132,7 @@ int main() {
         -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f};
     // -----模型位移-----
     glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.5f),
         glm::vec3(2.0f, 5.0f, -15.0f),
         glm::vec3(-1.5f, -2.2f, -2.5f),
         glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -138,6 +142,15 @@ int main() {
         glm::vec3(1.5f, 2.0f, -2.5f),
         glm::vec3(1.5f, 0.2f, -1.5f),
         glm::vec3(-1.3f, 1.0f, -1.5f)};
+    // -----模型旋转轴-----
+    // glm::vec3 cubeRotAxes[] = {};
+    // for (int i = 0; i < size(cubePositions); i++) {
+    //     cubeRotAxes[i] = glm::vec3(i, i, i);
+    // }
+
+    // for (int i = 0; i < size(cubePositions); i++) {
+    //     cout << cubeRotAxes[i].x << endl;
+    // }
 
     // -----点光源位移-----
     glm::vec3 pointLightPositions[] = {
@@ -159,10 +172,12 @@ int main() {
     ObjectShader.use();     // 启用此Shader
     ObjectShader.setInt("material.diffuse", 0);
     ObjectShader.setInt("material.specular", 1);
+    ObjectShader.setInt("spotLight.lightTexture", 2);
 
     // -----加载贴图-----
     unsigned int T_container_Diffuse = loadTexture("Assets/T_container_Diffuse.png");
     unsigned int T_container_Specular = loadTexture("Assets/T_container_specular.png");
+    unsigned int T_azi = loadTexture("Assets/azi.png");
 
     // -----创建VAO,VBO-----
     unsigned int VAO,
@@ -201,6 +216,7 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         // 处理输入
         processInput(window);
+        glfwSetKeyCallback(window, key_callback);
 
         // 渲染指令
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -218,9 +234,6 @@ int main() {
         // 绘制物体正方体
         ObjectShader.use();
         ObjectShader.setVec3("camPos", camera.Position);
-        ObjectShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-        ObjectShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-        ObjectShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
         ObjectShader.setFloat("material.shininess", 32.0f);
         // 平行光
         ObjectShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
@@ -230,9 +243,8 @@ int main() {
         ObjectShader.setFloat("dirLight.intensity", 1.0f);
         // 点光源 1
         ObjectShader.setVec3("pointLights[0].position", pointLightPositions[0]);
-        ObjectShader.setVec3("pointLights[0].color", pointLightColors[0].x, pointLightColors[0].y, pointLightColors[0].z);
         ObjectShader.setVec3("pointLights[0].ambient", pointLightColors[0].x * 0.05f, pointLightColors[0].y * 0.05f, pointLightColors[0].z * 0.05f);
-        ObjectShader.setVec3("pointLights[0].diffsue", pointLightColors[0].x, pointLightColors[0].y, pointLightColors[0].z);
+        ObjectShader.setVec3("pointLights[0].diffuse", pointLightColors[0].x, pointLightColors[0].y, pointLightColors[0].z);
         ObjectShader.setVec3("pointLights[0].specular", pointLightColors[0].x, pointLightColors[0].y, pointLightColors[0].z);
         ObjectShader.setFloat("pointLights[0].Kc", 1.0f);
         ObjectShader.setFloat("pointLights[0].Kl", 0.09f);
@@ -240,30 +252,27 @@ int main() {
         ObjectShader.setFloat("pointLights[0].intensity", 3.0f);
         // 点光源 2
         ObjectShader.setVec3("pointLights[1].position", pointLightPositions[1]);
-        ObjectShader.setVec3("pointLights[1].color", 1.0f, 0.0f, 0.0f);
-        ObjectShader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-        ObjectShader.setVec3("pointLights[1].diffsue", 0.8f, 0.8f, 0.8f);
-        ObjectShader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+        ObjectShader.setVec3("pointLights[1].ambient", pointLightColors[1].x * 0.05f, pointLightColors[1].y * 0.05f, pointLightColors[1].z * 0.05f);
+        ObjectShader.setVec3("pointLights[1].diffuse", pointLightColors[1].x, pointLightColors[1].y, pointLightColors[1].z);
+        ObjectShader.setVec3("pointLights[1].specular", pointLightColors[1].x, pointLightColors[1].y, pointLightColors[1].z);
         ObjectShader.setFloat("pointLights[1].Kc", 1.0f);
         ObjectShader.setFloat("pointLights[1].Kl", 0.09f);
         ObjectShader.setFloat("pointLights[1].Kq", 0.032f);
         ObjectShader.setFloat("pointLights[1].intensity", 3.0f);
         // 点光源 3
         ObjectShader.setVec3("pointLights[2].position", pointLightPositions[2]);
-        ObjectShader.setVec3("pointLights[2].color", 0.0f, 1.0f, 0.0f);
-        ObjectShader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
-        ObjectShader.setVec3("pointLights[2].diffsue", 0.8f, 0.8f, 0.8f);
-        ObjectShader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+        ObjectShader.setVec3("pointLights[2].ambient", pointLightColors[2].x * 0.05f, pointLightColors[2].y * 0.05f, pointLightColors[2].z * 0.05f);
+        ObjectShader.setVec3("pointLights[2].diffuse", pointLightColors[2].x, pointLightColors[2].y, pointLightColors[2].z);
+        ObjectShader.setVec3("pointLights[2].specular", pointLightColors[2].x, pointLightColors[2].y, pointLightColors[2].z);
         ObjectShader.setFloat("pointLights[2].Kc", 1.0f);
         ObjectShader.setFloat("pointLights[2].Kl", 0.09f);
         ObjectShader.setFloat("pointLights[2].Kq", 0.032f);
         ObjectShader.setFloat("pointLights[2].intensity", 3.0f);
         // 点光源 4
         ObjectShader.setVec3("pointLights[3].position", pointLightPositions[3]);
-        ObjectShader.setVec3("pointLights[3].color", 0.0f, 0.0f, 1.0f);
-        ObjectShader.setVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
-        ObjectShader.setVec3("pointLights[3].diffsue", 0.8f, 0.8f, 0.8f);
-        ObjectShader.setVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
+        ObjectShader.setVec3("pointLights[3].ambient", pointLightColors[3].x * 0.05f, pointLightColors[3].y * 0.05f, pointLightColors[3].z * 0.05f);
+        ObjectShader.setVec3("pointLights[3].diffuse", pointLightColors[3].x, pointLightColors[3].y, pointLightColors[3].z);
+        ObjectShader.setVec3("pointLights[3].specular", pointLightColors[3].x, pointLightColors[3].y, pointLightColors[3].z);
         ObjectShader.setFloat("pointLights[3].Kc", 1.0f);
         ObjectShader.setFloat("pointLights[3].Kl", 0.09f);
         ObjectShader.setFloat("pointLights[3].Kq", 0.032f);
@@ -280,12 +289,15 @@ int main() {
         ObjectShader.setFloat("spotLight.innerCutOffAngleCos", glm::cos(glm::radians(12.5f)));
         ObjectShader.setFloat("spotLight.outerCutOffAngleCos", glm::cos(glm::radians(15.0f)));
         ObjectShader.setFloat("spotLight.intensity", 5.0f);
+        ObjectShader.setFloat("spotLight.lightSwitch", spotLightSwitch);
 
         // 绑定贴图
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, T_container_Diffuse);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, T_container_Specular);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, T_azi);
         // Model矩阵构建
         V = camera.GetViewMatrix();
         P = glm::perspective(glm::radians(camera.Zoom), (float)scrWidth / (float)scrHeight, 0.1f, 100.0f);
@@ -294,7 +306,7 @@ int main() {
         for (int i = 0; i < size(cubePositions); i ++) {
             glm::mat4 M_obj = glm::mat4(1.0f);
             M_obj = glm::translate(M_obj, cubePositions[i]);
-            M_obj = glm::rotate(M_obj, (float)glm::radians(glfwGetTime() * 20.0f  ), glm::vec3(0.0f, 1.0f, 1.0f));
+            M_obj = glm::rotate(M_obj, (float)glm::radians(glfwGetTime() * (i+1)*3 ), glm::normalize(cubePositions[i]));
             ObjectShader.setMat4("M", M_obj);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);    // 绘制三角形
@@ -344,6 +356,12 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+}
+
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        spotLightSwitch *= -1.0f;
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
