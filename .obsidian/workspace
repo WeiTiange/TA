@@ -4,7 +4,7 @@
     "type": "split",
     "children": [
       {
-        "id": "b945cebd68bc730f",
+        "id": "724c89023f6d5636",
         "type": "leaf",
         "state": {
           "type": "markdown",
@@ -124,9 +124,10 @@
     "width": 361.5,
     "collapsed": true
   },
-  "active": "b945cebd68bc730f",
+  "active": "724c89023f6d5636",
   "lastOpenFiles": [
     "LearnOpenGL/OpenGL_高级功能.md",
+    "LearnOpenGL/4_纹理.md",
     "LearnOpenGL/OpenGL_渲染.md",
     "图形 2.4 传统经验光照模型.md",
     "图形 2.3 HLSL常用函数.md",
@@ -134,7 +135,6 @@
     "图形 2.1 - 色彩空间.md",
     "图形 1.1 - 渲染流水线.md",
     "LearnOpenGL/6_摄像机.md",
-    "LearnOpenGL/5_坐标系统.md",
-    "LearnOpenGL/4_纹理.md"
+    "LearnOpenGL/5_坐标系统.md"
   ]
 }

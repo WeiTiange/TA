@@ -218,3 +218,197 @@
 | GL_CCW           | 将逆时针顺序顶点定义的面设为正向面 |
 | GL_CW            | 将顺时针顺序顶点定义的面设为正向面                                   |
 
+#### 帧缓冲(Frame Buffer)
+- 帧缓冲是颜色缓冲、深度缓冲、模板缓冲等各种缓冲结合在一起的缓冲
+- 一个完整的帧缓冲需要满足一下条件：
+	- 附加**至少一个**缓冲(颜色、深度、模板)
+	- 至少有一个**颜色附件**(Attachment)
+	- 所有的附件都必须是**完整**的(保留了内存)
+	- 每个缓冲都应该有**相同**的样本数
+- ###### 创建帧缓冲
+	- 通过glGenFramebuffers来创建帧缓冲对象
+		- <mark>unsigned int fbo;</mark>
+		- <mark>glGenFramebuffers(1, &fbo)</mark>
+	- 再使用glBindFramebuffer来绑定帧缓冲
+		- <mark>glBindFramebuffer(GL_FRAMEBUFFER, fbo)</mark>
+	- 绑定之后所有的**读取**和**写入**帧缓冲的操作将会影响当前绑定的帧缓冲
+	- 也可以使用<mark>GL_READ_FRAMEBUFFER</mark>或者<mark>GL_DRAW_FRAMEBUFFER</mark>来将一个帧缓冲分别绑定到读取目标和写入目标
+		- 绑定到Read的帧缓冲将会使用在所有如glReadPixels的**读取**操作上
+		- 绑定到Draw的帧缓冲将会被用作渲染、清楚等**写入**操作的目标上
+		- *大部分情况不需要分开绑定*
+	- 通过glCheckFramebufferStatus检查帧缓冲是否完整。他会检测**当前绑定**的帧缓冲。如果返回值是**GL_FRAMEBUFFER_COMPLETE**，帧缓冲就是完整的了
+		- <mark>if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)</mark>
+		- [返回值列表](**https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glCheckFramebufferStatus.xhtml**)
+	- 当帧缓冲是完整的了之后，所有的渲染操作将会渲染到当前绑定的帧缓冲的附件中
+	- 由于自定义的帧缓冲不是默认的帧缓冲，渲染指令不会对窗口的输出有任何影响，通过再次激活默认帧缓冲，将他绑定到0来解决
+		- <mark>glBindFramebuffer(GL_FRAMEBUFFER, 0)</mark>
+	- 在完成所有帧缓冲操作后删除该帧缓冲对象
+		- <mark>glDeleteFramebuffers(1, &fbo)</mark>
+- ###### 附件(Attachment)
+	- 在完整性检查之前，需要给帧缓冲附加附件
+	- 附件是一个内存位置，能够作为帧缓冲的一个缓冲，可以看做为一个图像
+	- 创建附件有两个选项
+		- **纹理**
+		- **渲染缓冲对象(Renderbuffer Object)**
+	- 渲染缓冲对象能为帧缓冲对象提供一些优化
+	- 通常的规则是，如果不需要从一个缓冲中采样数据，那么对这个缓冲使用渲染缓冲对象，如果需要从缓冲中采样颜色或深度等数据，那么应该使用纹理附件
+- ###### 纹理附件
+	- 当把纹理附加给帧缓冲时，所有的渲染指令将会写入到这个纹理图像中，**可以在着色器中进行使用**
+	- 创建纹理附件和创建一张普通的纹理对象差不多
+		- <mark>unsigned int texture; <br>glGenTextures(1, &texture); <br>glBindTexture(GL_TEXTURE_2D, texture); <br>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL); <br>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); <br>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</mark>
+		- 与创建一张纹理对象的区别是
+			- 纹理附件将**glTexImage2D的宽高设置为了屏幕的宽高**，因为这张纹理将要作为窗口的输出，需要和窗口一样大 (但这并不是必须的)
+			- 将glTexImage2D的纹理实际**data参数设为了NULL**，因为填充这个纹理的数据将会在**渲染到帧缓冲之后**来进行
+		- *如果想把屏幕渲染到更大或者更小的纹理上，需要在渲染到帧缓冲之前再调用一次glViewport并使用纹理的新维度作为参数，否则只有一小部分的纹理火屏幕会被渲染到这个纹理上*
+		- 创建好纹理之后需要将纹理附件附加到帧缓冲上
+			- <mark>glFramebufferTexture2D(target, attachment, textarget, texture, level);</mark>
+				- `target`：帧缓冲的目标 (绘制，读取，或者都)
+				- `attachment`：要附加的附件类型
+					- GL_COLOR_ATTACHMENT0
+					- GL_DEPTH_ATTACHMENT
+					- GL_STENCIL_ATTACHMENT
+					- *颜色附件可以有多个，通过类型末尾的数字设置*
+				- `textarget`：附加的纹理类型
+					- GL_TEXTURE_2D
+					- GL_TEXTURE_CUBE_MAP_POSITIVE_X 
+					- GL_TEXTURE_CUBE_MAP_NEGATIVE_X 
+					- GL_TEXTURE_CUBE_MAP_POSITIVE_Y 
+					- GL_TEXTURE_CUBE_MAP_NEGATIVE_Y 
+					- GL_TEXTURE_CUBE_MAP_POSITIVE_Z 
+					- GL_TEXTURE_CUBE_MAP_NEGATIVE_Z`
+				- `texture`：附加的纹理附件对象本身
+				- `level`：Mipmap级别，**必须是0**
+			- 可以将深度缓冲和模板缓冲附加到同一个单独的纹理中。纹理的每32位数值将包含24位的深度信息和8位的模板信息
+				- <mark>glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 800, 600, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL );<br> glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture, 0);</mark>
+- ###### 渲染缓冲对象附件(Renderbuffer Object)
+	- 渲染缓冲对象附件会将数据储存为OpenGL原生的渲染格式，他是为离屏渲染到帧缓冲优化过的
+	- 渲染缓冲对象直接将所有的渲染数据储存在它的缓冲中，不会做任何针对纹理格式的转换
+	- 渲染缓冲对象通常是只写的，不能读取。但是仍然可以用glReadPixels来读取他，但是是从当前绑定的帧缓冲中返回特定区域的像素而不是附加本身
+	- 创建并绑定渲染缓冲对象
+		- <mark>unsigned int rbo;<br>glGenRenderbuffers(1, &rbo);<br>glBindRenderbuffer(GL_RENDERBUFFER, rbo);</mark>
+	- 因为我们只**需要**深度和模板值用于测试，而不需要对他们进行**采样**，所以通常是只写的渲染缓冲对象很适合用于深度和模板附件
+	- 通过调用glRenderbufferStorage来创建深度和模板渲染缓冲对象
+		- <mark>glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, scrWidth, scrHeight);</mark>
+	- 最后附加该渲染缓冲对象到当前帧缓冲
+		- <mark>glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,  rbo);</mark>
+- ###### 渲染到纹理
+	- 要将场景绘制到纹理上需要以下步骤：
+		- 将新的帧缓冲绑定为激活 的帧缓冲，和往常一样渲染场景
+		- 绑定默认的帧缓冲
+		- 绘制一个横跨整个屏幕的四边形，将帧缓冲的颜色缓冲作为他的纹理
+- ###### 基于帧缓冲的一些后处理
+	- 反相(Inversion)
+		- 1 - 屏幕纹理的颜色值
+		- ![[OpenGL_帧缓冲后处理_反相.png]]
+	- 灰度(Grayscale)
+		- 三种灰度算法
+			- Lightness: 在R, G, B中取最大和最小的两个分量然后取他们俩的平均数
+				- <mark>(max(R, G, B) + min(R, G, B)) / 2</mark>
+			- Average: 将R, G, B的三个分量相加取平均数
+				- <mark>(R + G + B) /3 </mark>
+			- Luminosity: 由于人眼对绿色更敏感，而对蓝色不那么敏感，所以为了获取物理上更精确的效果，使用加权的通道，即**R的权重为0.2126，G的权重为0.7152，B的权重为0.0722**
+				- <mark>0.2126 \* R + 0.7152 \* G + 0.0722 \* B</mark>
+		- ![[OpenGL_帧缓冲后处理_灰度.png]]
+	- **核效果**
+		- 核(Kernel) / 卷积矩阵(Convolution Matrix)是一个类似矩阵的数值数组，这个数组的中心的值是当前的像素对应的核值，周围的核值是该像素周围的像素所对应的核值。核的每个值都与他所对应的像素相乘，并将结果相加，相加的结果为中心像素新的值
+		- ![[OpenGL_核.png]]
+		- 在上图的核中，当前像素的新值为
+			- 2 \* P<sub>11</sub>  +   2 \* P<sub>12</sub>  +   2 \* P<sub>13</sub>  +   2 \* P<sub>21</sub>  +   2 \* P<sub>23</sub>  +   2 \* P<sub>31</sub>  +   2 \* P<sub>32</sub>  +   2 \* P<sub>33</sub>  +   (-15) \* P<sub>22</sub>
+		- 大部分的核都是3X3核
+		- 大部分的核的**所有权重加起来应该等于1**，如果不等于1，意味着新的像素值会比原来的像素值更亮 (大于1) 或者更暗 (小于1)
+		- 周围像素距离中心像素的距离(采样点)可以自定义，越小的采样点最后的结果越细腻
+			- ![[OpenGL_帧缓冲后处理_核偏移量.png]]
+	- 核效果应用-**锐化**
+		- ![[OpenGL_帧缓冲后处理_锐化核.png]]
+		- ![[OpenGL_帧缓冲后处理_锐化.png]]
+	- 核效果应用-**模糊**
+		- 使用更高阶的高斯模糊的时候可以通过先渲染横向模糊到一个FBO，再将横向模糊的纹理在第二个FBO中进行纵向模糊，最终得到完整的高斯模糊。这样做可以极大的减少采样数以减少开销，越高阶的高斯模糊节约的性能越多
+		- ![[OpenGL_帧缓冲后处理_模糊核.png]]
+		- ![[OpenGL_帧缓冲后处理_模糊.png]]
+	- 核效果应用-**边缘检测**
+		- ![[OpenGL_帧缓冲后处理_边缘检测核.png]]
+		- ![[OpenGL_帧缓冲后处理_边缘检测.png]]
+
+#### Cubemap
+- Cubemap是包含了6个2D纹理的纹理，每个2D纹理组成立方体的一个面
+- ###### 创建Cubemap
+	- <mark>unsigned int textureID; <br>glGenTextures(1, &textureID); <br>glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);</mark>
+	- 由于Cubemap包含了6个面，需要对每一个面调用一次<mark>glTexImage2D</mark>函数，一共6次，每次在调用时设定该纹理对应的是Cubemap的哪个面
+	- 可以通过循环从<mark>GL_TEXTURE_CUBE_MAP_POSITIVE_X</mark>开始历遍所有的方位
+		- ![[OpenGL_Cubemap纹理历遍.png]]
+		- textures_faces包含了所有的纹理目标并按顺序排列
+	- 设置好6个面的纹理之后需要对Cubemap的**环绕**和**过滤**方式进行设置
+		- 唯一与2D纹理不同的是，由于Cubemap是立体的，需要在环绕方式里**增加一个R坐标**来这是Cubemap的Z方向环绕方式
+
+| 纹理目标                       | 方位 |
+| ------------------------------ | ---- |
+| GL_TEXTURE_CUBE_MAP_POSITIVE_X | 右   |
+| GL_TEXTURE_CUBE_MAP_NEGATIVE_X | 左   |
+| GL_TEXTURE_CUBE_MAP_POSITIVE_Y | 上   |
+| GL_TEXTURE_CUBE_MAP_NEGATIVE_Y | 下   |
+| GL_TEXTURE_CUBE_MAP_POSITIVE_Z | 后   |
+| GL_TEXTURE_CUBE_MAP_NEGATIVE_Z | 前     |
+
+- ###### 天空盒
+	- 使用Cubemap的**顶点**位置作为UV来进行采样(立方体处于原点)
+	- 不给天空盒创建M矩阵，以及**使用无视位移的V矩阵**，来使天空盒看起来很远
+	- 使用**提前深度测试(Early Depth Test)**，直接不渲染所有被遮挡的部分，而不是在渲染完所有的片段之后再在深度测试中舍弃被遮挡的片段
+		- [关于提前深度测试](https://zhuanlan.zhihu.com/p/72956611)
+		- 为了让天空盒被其他所有物体遮挡，在**顶点着色器**中将<mark>gl_Position</mark>的**z**分量设为**w**，因为片段的深度值是由<mark>gl_Position</mark>的**z**分量除以**w**分量得到的，将**z**手动设置为**w**可以让天空盒的片段深度值永远是**最大值1**(离相机最远)
+- ###### 环境映射-反射
+	- 反射是的颜色，**根据观察者的视角**，或多或少的受环境颜色的影响
+	- **反射需要**：
+		- 视方向的反方向
+		- 法线方向
+	- 通过**视方向的反方向**和**法线方向**求得**观察方向沿法线方向的反射方向**，并使用该向量作为UV值在Cubemap上进行采样从而获得模型当前片段的镜面反射颜色
+	- ![[OpenGL_环境映射_反射.png]]
+- ###### 环境映射-折射
+	- 折射是由于光线由于**传播介质的改变**而产生的**方向的改变**，折射通过斯涅尔定律 (Snell's Law) 来描述
+	- ![[OpenGL_环境映射_折射示意图.png]]
+	- 折射需要：
+		- 视方向的反方向
+		- 法线方向
+	- 通过**视方向的反方向**和**法线方向**以及**当前传播介质和目标传播介质的折射率的比值**求得视方向在目标介质中的传播方向
+	- ![[OpenGL_环境映射_折射.png]]
+
+#### 高级数据
+- ###### OpenGL的一些对缓冲的操作
+	- 缓冲只是一个管理特定内存块的对象，在把他绑定到一个缓冲目标时，如GL_ARRAY_BUFFER、GL_ELEMENT_ARRAY_BUFFER，他才有意义
+	- 在绑定完缓冲进行数据的填充时，可以把**data**设为**NULL**，这样可以预留特定大小的内存，但是在之后才对这个缓冲进行数据填充
+	- 可以通过<mark>glBufferSubData</mark>来对一个缓冲的一部分进行数据填充，但在使用<mark>glBufferSubData</mark>之前必须先调用<mark>glBufferData</mark>来为缓冲分配足够的内存
+		- <mark>// 范围： [24, 24 + sizeof(data)]<br>glBufferSubData(GL_ARRAY_BUFFER, 24, sizeof(data), &data);</mark>
+	- 或者通过请求缓冲内存的指针，直接将数据复制到缓冲当中。通过调用<mark>glMapBuffer</mark>函数，OpenGL会返回当前绑定缓冲的内存指针。这样可以直接将数据映射到缓冲中而不用实现将他们储存到临时内存中
+		- ![[OpenGL_缓冲内存指针.png]]
+- ###### 分批顶点属性
+	- 在之前的教程里都是将模型的顶点位置、法线方向、UV、顶点色等数据全部紧密的放置在一起，而另一种做法是将每个数据类型分批打包成个数组，**比如位置数据包含了模型所有的顶点的顶点位置**，**法线数据包含了模型所有的顶点的法线方向**
+	- 这两种方法细化那个用哪个
+		- ![[OpenGL_顶点数据分批1.png]]
+		- ![[OpenGL_顶点数据分批2.png]]
+- ###### 复制缓冲
+	- 填充好数据之后，可以将缓冲里的数据复制给其他的缓冲，或者与其他缓冲共享数据，可以通过<mark>glCopyBufferSubData</mark>来复制缓冲中的数据
+		- <mark>void glCopyBufferSubData(GLenum readtarget, GLenum writetarget, GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size);</mark>
+		- `readtarget`：被复制数据的缓冲 (源)
+		- `writetarget`：把数据复制过去的目标缓冲 (目标)
+		- `readoffset`：读取数据的起始位置
+		- `writeoffset`：写入数据的起始位置
+			- 由于不能同时绑定两个同样类型的缓冲，如果**源和目标是同样的缓冲类型**，可以需要的缓冲对象绑定到<mark>GL_COPY_READ_BUFFER</mark>和<mark>GL_COPY_WRITE_BUFFER</mark>上，并把他们俩设置为源和目标，<mark>glCopyBufferSubData</mark>会从源目标的其实位置读取数据并在目标的起始位置写入数据
+			- ![[OpenGL_复制缓冲1.png]]
+		- 也可以只将`writetarget`缓冲绑定为新的缓冲目标类型
+			- ![[OpenGL_复制缓冲2.png]]
+
+#### 高级GLSL
+- ###### GLSL的内建变量(Built-in Variable)
+	- 除了顶点属性，uniform，和sampler以外，还可以通过前缀为**gl_** 的变量来读取/写入着色器之外的数据
+	- 最常见的有一直在用的**gl_Position**和在可视化场景深度时用的**gl_FragCoord**
+	- [全部的OpenGL内建变量](https://www.khronos.org/opengl/wiki/Built-in_Variable_(GLSL))
+- ###### 顶点着色器变量
+	- **gl_Position**：输出变量，裁剪空间的顶点位置向量，想要在屏幕上输出颜色必须的步骤
+	- **gl_PointSize**：输出变量，当图元渲染模式设为<mark>GL_POINTS</mark>时，可以在主程序中使用<mark>glPointSize</mark>来设置点的大小，也可以在顶点着色器中通过<mark>gl_PointSize</mark>来设置
+		- 与在主程序中设置的区别是，在顶点着色器中可以对每个点设置不同的值
+		- 在顶点着色器中修改点图元大小的功能默认是禁用的，需要使用<mark>GL_PROGRAM_POINT_SIZE</mark>来启用
+			- <mark>glEnable(GL_PROGRAM_POINT_SIZE);</mark>
+		- 使用例：点离相机越远就越大<br>![[OpenGL_gl_PointSize.png]]
+	- **gl_VertexID**：输入变量，储存了正在绘制的顶点的ID
+		- 使用<mark>glDrawElements</mark>进行索引渲染时，这个变量会储存正在绘制顶点的当前索引
+		- 使用<mark>glDrawArrays</mark>进行渲染是，这个变量会储存从渲染调用开始的已处理的顶点数量
+- 

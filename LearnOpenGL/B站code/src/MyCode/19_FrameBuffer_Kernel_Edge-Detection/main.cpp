@@ -89,9 +89,10 @@ int main() {
     glViewport(0, 0, scrWidth, scrHeight);
 
     // -----创建和编译Shader-----
-    Shader ObjectShader("./src/MyCode/18_FaceCulling/ObjectShader.vert", "./src/MyCode/18_FaceCulling/ObjectShader.frag");
-    Shader OutlineShader("./src/MyCode/18_FaceCulling/Outline.vert", "./src/MyCode/18_FaceCulling/Outline.frag");
-    Shader WindowShader("./src/MyCode/18_FaceCulling/Outline.vert", "./src/MyCode/18_FaceCulling/Window.frag");
+    Shader ObjectShader("./src/MyCode/19_FrameBuffer_Kernel_Edge-Detection/ObjectShader.vert", "./src/MyCode/19_FrameBuffer_Kernel_Edge-Detection/ObjectShader.frag");
+    Shader OutlineShader("./src/MyCode/19_FrameBuffer_Kernel_Edge-Detection/Outline.vert", "./src/MyCode/19_FrameBuffer_Kernel_Edge-Detection/Outline.frag");
+    Shader WindowShader("./src/MyCode/19_FrameBuffer_Kernel_Edge-Detection/Outline.vert", "./src/MyCode/19_FrameBuffer_Kernel_Edge-Detection/Window.frag");
+    Shader ScreenTextureShader("./src/MyCode/19_FrameBuffer_Kernel_Edge-Detection/ScreenTexture.vert", "./src/MyCode/19_FrameBuffer_Kernel_Edge-Detection/ScreenTexture.frag");
 
     // -----加载模型-----
     Model Cube("./Assets/Mesh/TestScene/Cube.obj");
@@ -100,6 +101,31 @@ int main() {
     Model Cone("./Assets/Mesh/TestScene/Cone.obj");
     Model Plane("./Assets/Mesh/TestScene/Plane.obj");
     Model Plane_V("./Assets/Mesh/TestScene/Plane_V.obj");
+
+    // -----设置横跨整个屏幕的四边形-----
+    float quadVertices[] = {
+        // positions   // texCoords
+        -1.0f, 1.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f,
+        1.0f, -1.0f, 1.0f, 0.0f,
+
+        -1.0f, 1.0f, 0.0f, 1.0f,
+        1.0f, -1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 1.0f, 1.0f};
+    // 创建VAO, VBO
+    unsigned int quadVAO, quadVBO;
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+    // 绑定VAO, VBO
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    // 填充VBO数据
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    // 设置顶点属性指针
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // -----加载贴图-----
     unsigned int T_window = loadTexture("./Assets/T_transparent_window.png");
@@ -113,6 +139,35 @@ int main() {
     windowPos.push_back(glm::vec3(0.0f, -3.5f, -9.7f));
     windowPos.push_back(glm::vec3(-0.3f, -3.5f, -12.3f));
     windowPos.push_back(glm::vec3(0.5f, -3.5f, -10.6f));
+
+    // -----创建帧缓冲-----
+    unsigned int framebuffer;       // Framebuffer Object
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    // 附加纹理附件
+    unsigned int textureColorBuffer;
+    glGenTextures(1, &textureColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, scrWidth, scrHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+    
+    // 创建渲染缓冲对象
+    unsigned int rbo;    // Renderbuffer Object
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, scrWidth, scrHeight);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);     // 为渲染缓冲对象分配了足够的内存之后，就可以解绑这个渲染缓冲
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // -----OpenGL渲染设置-----
     // 深度测试
@@ -128,7 +183,9 @@ int main() {
     // 开启面剔除
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    // 绘制模式
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // 隐藏鼠标
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     while (!glfwWindowShouldClose(window)) {
@@ -136,22 +193,19 @@ int main() {
         processInput(window);
         glfwSetKeyCallback(window, key_callback);
 
-        // 渲染指令
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        std::map<float, glm::vec3> sorted;
-        for (unsigned int i = 0; i < windowPos.size(); i++)
-        {
-            float distance = glm::length(camera.Position - windowPos[i]);
-            sorted[distance] = windowPos[i];
-        }
 
         // DeltaTime
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastTime;
         lastTime = currentFrame;
 
+        // -----Pass 1-----
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        // 渲染指令
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        
         // View, Projection矩阵构建
         glm::mat4 V = camera.GetViewMatrix();
         glm::mat4 P = glm::perspective(glm::radians(camera.Zoom), (float)scrWidth/(float)scrHeight, 0.1f, 100.0f);
@@ -249,6 +303,14 @@ int main() {
         glStencilMask(0xFF);
         glClear(GL_STENCIL_BUFFER_BIT);
 
+        // 给透明窗户做深度排序
+        std::map<float, glm::vec3> sorted;
+        for (unsigned int i = 0; i < windowPos.size(); i++)
+        {
+            float distance = glm::length(camera.Position - windowPos[i]);
+            sorted[distance] = windowPos[i];
+        }
+
         glDisable(GL_CULL_FACE);
         glStencilMask(0x00);
         WindowShader.use();
@@ -264,6 +326,17 @@ int main() {
         }
         glStencilMask(0x00);
         glEnable(GL_CULL_FACE);
+
+        // -----Pass 2-----
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);   // 使用默认帧缓冲
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);   // 将背景设为白色   
+        glClear(GL_COLOR_BUFFER_BIT);
+        ScreenTextureShader.use();
+        glBindVertexArray(quadVAO);
+        glDisable(GL_DEPTH_TEST);
+        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
 
         glfwSwapBuffers(window);    // 交换缓冲
         glfwPollEvents();           // 检查并调用事件

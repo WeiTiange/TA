@@ -89,9 +89,9 @@ int main() {
     glViewport(0, 0, scrWidth, scrHeight);
 
     // -----创建和编译Shader-----
-    Shader ObjectShader("./src/MyCode/18_FaceCulling/ObjectShader.vert", "./src/MyCode/18_FaceCulling/ObjectShader.frag");
-    Shader OutlineShader("./src/MyCode/18_FaceCulling/Outline.vert", "./src/MyCode/18_FaceCulling/Outline.frag");
-    Shader WindowShader("./src/MyCode/18_FaceCulling/Outline.vert", "./src/MyCode/18_FaceCulling/Window.frag");
+    Shader ObjectShader("./src/MyCode/19_FrameBuffer_HW/ObjectShader.vert", "./src/MyCode/19_FrameBuffer_HW/ObjectShader.frag");
+    Shader WindowShader("./src/MyCode/19_FrameBuffer_HW/Outline.vert", "./src/MyCode/19_FrameBuffer_HW/Window.frag");
+    Shader MirrorShader("./src/MyCode/19_FrameBuffer_HW/Mirror.vert", "./src/MyCode/19_FrameBuffer_HW/Mirror.frag");
 
     // -----加载模型-----
     Model Cube("./Assets/Mesh/TestScene/Cube.obj");
@@ -100,6 +100,31 @@ int main() {
     Model Cone("./Assets/Mesh/TestScene/Cone.obj");
     Model Plane("./Assets/Mesh/TestScene/Plane.obj");
     Model Plane_V("./Assets/Mesh/TestScene/Plane_V.obj");
+
+    // -----设置横跨整个屏幕的四边形-----
+    float quadVertices[] = {
+        // positions   // texCoords
+        -1.0f, 1.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f,
+        1.0f, -1.0f, 1.0f, 0.0f,
+
+        -1.0f, 1.0f, 0.0f, 1.0f,
+        1.0f, -1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 1.0f, 1.0f};
+    // 创建VAO, VBO
+    unsigned int quadVAO, quadVBO;
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+    // 绑定VAO, VBO
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    // 填充VBO数据
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    // 设置顶点属性指针
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // -----加载贴图-----
     unsigned int T_window = loadTexture("./Assets/T_transparent_window.png");
@@ -113,6 +138,33 @@ int main() {
     windowPos.push_back(glm::vec3(0.0f, -3.5f, -9.7f));
     windowPos.push_back(glm::vec3(-0.3f, -3.5f, -12.3f));
     windowPos.push_back(glm::vec3(0.5f, -3.5f, -10.6f));
+
+    // -----创建帧缓冲-----
+    unsigned int framebuffer;       // Framebuffer Object
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    // 附加纹理附件
+    unsigned int textureColorBuffer;
+    glGenTextures(1, &textureColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, scrWidth, scrHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+    
+    // 创建渲染缓冲对象
+    unsigned int rbo;    // Renderbuffer Object
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, scrWidth, scrHeight);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);     // 为渲染缓冲对象分配了足够的内存之后，就可以解绑这个渲染缓冲
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // -----OpenGL渲染设置-----
     // 深度测试
@@ -128,7 +180,9 @@ int main() {
     // 开启面剔除
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    // 绘制模式
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // 隐藏鼠标
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     while (!glfwWindowShouldClose(window)) {
@@ -136,134 +190,23 @@ int main() {
         processInput(window);
         glfwSetKeyCallback(window, key_callback);
 
-        // 渲染指令
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        std::map<float, glm::vec3> sorted;
-        for (unsigned int i = 0; i < windowPos.size(); i++)
-        {
-            float distance = glm::length(camera.Position - windowPos[i]);
-            sorted[distance] = windowPos[i];
-        }
 
         // DeltaTime
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastTime;
         lastTime = currentFrame;
 
-        // View, Projection矩阵构建
+        // -----Pass 1-----
+        // V, P矩阵
         glm::mat4 V = camera.GetViewMatrix();
         glm::mat4 P = glm::perspective(glm::radians(camera.Zoom), (float)scrWidth/(float)scrHeight, 0.1f, 100.0f);
 
-        OutlineShader.use();
-        OutlineShader.setMat4("V", V);
-        OutlineShader.setMat4("P", P);
-
         ObjectShader.use();
-        ObjectShader.setMat4("V", V);
-        ObjectShader.setMat4("P", P);
-        ObjectShader.setVec3("lDir", -(glm::vec3(-0.5f, -0.5f, -0.5f)));
-        ObjectShader.setVec3("camPos", camera.Position);
-
+        // 镜子
         glm::mat4 M = glm::mat4(1.0f);
-        M = glm::translate(M, glm::vec3(0.0f, -5.0f, -10.0f)); // translate it down so it's at the center of the scene
+        M = glm::translate(M, glm::vec3(0.0f, -5.0f, -10.0f));
         ObjectShader.setMat4("M", M);
-        ObjectShader.setMat3("M_normal", (glm::mat3(glm::transpose(glm::inverse(M)))));
-        glStencilMask(0x00);
-        Plane.Draw(ObjectShader);       // 地板
-        
 
-        // 带线框的模型们
-        float scale = 1.05f;
-
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);      // 所有片段都更新模板华冲
-        glStencilMask(0xFF);        // 启用模板缓冲写入
-        M = glm::mat4(1.0f);
-        M = glm::translate(M, glm::vec3(-5.0f, -3.5f, -10.0f));
-        ObjectShader.use();
-        ObjectShader.setMat4("M", M);
-        Cube.Draw(ObjectShader);
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilMask(0x00);
-        M = glm::mat4(1.0f);
-        M = glm::translate(M, glm::vec3(-5.0f, -3.5f, -10.0f));
-        M = glm::scale(M, glm::vec3(scale));
-        OutlineShader.use();
-        OutlineShader.setMat4("M", M);
-        Cube.Draw(OutlineShader);
-        glStencilMask(0xFF);
-        glClear(GL_STENCIL_BUFFER_BIT);
-
-        glStencilFunc(GL_ALWAYS, 1, 0xFF); // 所有片段都更新模板华冲
-        glStencilMask(0xFF);               // 启用模板缓冲写入
-        M = glm::mat4(1.0f);
-        M = glm::translate(M, glm::vec3(0.0f, -3.5f, -5.0f));
-        ObjectShader.use();
-        ObjectShader.setMat4("M", M);
-        Sphere.Draw(ObjectShader);
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilMask(0x00);
-        M = glm::mat4(1.0f);
-        M = glm::translate(M, glm::vec3(0.0f, -3.5f, -5.0f));
-        M = glm::scale(M, glm::vec3(scale));
-        OutlineShader.use();
-        OutlineShader.setMat4("M", M);
-        Sphere.Draw(OutlineShader);
-        glStencilMask(0xFF);
-        glClear(GL_STENCIL_BUFFER_BIT);
-
-        glStencilFunc(GL_ALWAYS, 1, 0xFF); // 所有片段都更新模板华冲
-        glStencilMask(0xFF);               // 启用模板缓冲写入
-        M = glm::mat4(1.0f);
-        M = glm::translate(M, glm::vec3(5.0f, -3.5f, -10.0f));
-        ObjectShader.use();
-        ObjectShader.setMat4("M", M);
-        Torus.Draw(ObjectShader);
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilMask(0x00);
-        M = glm::mat4(1.0f);
-        M = glm::translate(M, glm::vec3(5.0f, -3.5f, -10.0f));
-        M = glm::scale(M, glm::vec3(scale));
-        OutlineShader.use();
-        OutlineShader.setMat4("M", M);
-        Torus.Draw(OutlineShader);
-        glStencilMask(0xFF);
-        glClear(GL_STENCIL_BUFFER_BIT);
-
-        glStencilFunc(GL_ALWAYS, 1, 0xFF); // 所有片段都更新模板华冲
-        glStencilMask(0xFF);               // 启用模板缓冲写入
-        M = glm::mat4(1.0f);
-        M = glm::translate(M, glm::vec3(0.0f, -3.5f, -15.0f));
-        ObjectShader.use();
-        ObjectShader.setMat4("M", M);
-        Cone.Draw(ObjectShader);
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilMask(0x00);
-        M = glm::mat4(1.0f);
-        M = glm::translate(M, glm::vec3(0.0f, -3.5f, -15.0f));
-        M = glm::scale(M, glm::vec3(scale));
-        OutlineShader.use();
-        OutlineShader.setMat4("M", M);
-        Cone.Draw(OutlineShader);
-        glStencilMask(0xFF);
-        glClear(GL_STENCIL_BUFFER_BIT);
-
-        glDisable(GL_CULL_FACE);
-        glStencilMask(0x00);
-        WindowShader.use();
-        WindowShader.setMat4("V", V);
-        WindowShader.setMat4("P", P);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, T_window);
-        for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it) {
-            M = glm::mat4(1.0f);
-            M = glm::translate(M, it->second);
-            WindowShader.setMat4("M", M);
-            Plane_V.Draw(WindowShader); // 草
-        }
-        glStencilMask(0x00);
-        glEnable(GL_CULL_FACE);
 
         glfwSwapBuffers(window);    // 交换缓冲
         glfwPollEvents();           // 检查并调用事件

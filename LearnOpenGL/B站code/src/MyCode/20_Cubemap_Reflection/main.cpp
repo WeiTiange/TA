@@ -37,6 +37,8 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 // 纹理加载
 unsigned int loadTexture(char const *path); 
+// 立方体贴图加载
+unsigned int loadCubemap(vector<std::string> faces);
 // ---------------------------
 
 // ----------全局参数----------
@@ -89,11 +91,14 @@ int main() {
     glViewport(0, 0, scrWidth, scrHeight);
 
     // -----创建和编译Shader-----
-    Shader ObjectShader("./src/MyCode/18_FaceCulling/ObjectShader.vert", "./src/MyCode/18_FaceCulling/ObjectShader.frag");
-    Shader OutlineShader("./src/MyCode/18_FaceCulling/Outline.vert", "./src/MyCode/18_FaceCulling/Outline.frag");
-    Shader WindowShader("./src/MyCode/18_FaceCulling/Outline.vert", "./src/MyCode/18_FaceCulling/Window.frag");
+    Shader ObjectShader("./src/MyCode/20_Cubemap_Reflection/Shaders/ObjectShader.vert", "./src/MyCode/20_Cubemap_Reflection/Shaders/ObjectShader.frag");
+    Shader OutlineShader("./src/MyCode/20_Cubemap_Reflection/Shaders/Outline.vert", "./src/MyCode/20_Cubemap_Reflection/Shaders/Outline.frag");
+    Shader WindowShader("./src/MyCode/20_Cubemap_Reflection/Shaders/Outline.vert", "./src/MyCode/20_Cubemap_Reflection/Shaders/Window.frag");
+    Shader SkyBoxShader("./src/MyCode/20_Cubemap_Reflection/Shaders/SkyBox.vert", "./src/MyCode/20_Cubemap_Reflection/Shaders/SkyBox.frag");
+    Shader ReflectShader("./src/MyCode/20_Cubemap_Reflection/Shaders/Reflect.vert", "./src/MyCode/20_Cubemap_Reflection/Shaders/Reflect.frag");
 
     // -----加载模型-----
+    Model UnitCube("./Assets/Mesh/TestScene/UnitCube.obj");
     Model Cube("./Assets/Mesh/TestScene/Cube.obj");
     Model Sphere("./Assets/Mesh/TestScene/Sphere.obj");
     Model Torus("./Assets/Mesh/TestScene/Torus.obj");
@@ -105,6 +110,20 @@ int main() {
     unsigned int T_window = loadTexture("./Assets/T_transparent_window.png");
     WindowShader.use();
     WindowShader.setInt("T_window", 0);
+
+    // -----加载Cubemap-----
+    vector<std::string> faces{
+        "./Assets/Cubemap/SkyLake/right.jpg",
+        "./Assets/Cubemap/SkyLake/left.jpg",
+        "./Assets/Cubemap/SkyLake/top.jpg",
+        "./Assets/Cubemap/SkyLake/bottom.jpg",
+        "./Assets/Cubemap/SkyLake/front.jpg",
+        "./Assets/Cubemap/SkyLake/back.jpg"
+    };
+    unsigned int cubemapTexture = loadCubemap(faces);
+    SkyBoxShader.use();
+    SkyBoxShader.setInt("Cubemap", 0);
+    ReflectShader.setInt("Cubemap", 0);
 
     // 世界空间窗户位置
     vector<glm::vec3> windowPos;
@@ -153,9 +172,10 @@ int main() {
         lastTime = currentFrame;
 
         // View, Projection矩阵构建
-        glm::mat4 V = camera.GetViewMatrix();
-        glm::mat4 P = glm::perspective(glm::radians(camera.Zoom), (float)scrWidth/(float)scrHeight, 0.1f, 100.0f);
+        glm::mat4 V =camera.GetViewMatrix();
+        glm::mat4 P = glm::perspective(glm::radians(camera.Zoom), (float)scrWidth / (float)scrHeight, 0.1f, 100.0f);
 
+        // 地板
         OutlineShader.use();
         OutlineShader.setMat4("V", V);
         OutlineShader.setMat4("P", P);
@@ -163,17 +183,19 @@ int main() {
         ObjectShader.use();
         ObjectShader.setMat4("V", V);
         ObjectShader.setMat4("P", P);
-        ObjectShader.setVec3("lDir", -(glm::vec3(-0.5f, -0.5f, -0.5f)));
-        ObjectShader.setVec3("camPos", camera.Position);
+        ReflectShader.use();
+        ReflectShader.setMat4("P", P);
+        ReflectShader.setMat4("V", V);
 
         glm::mat4 M = glm::mat4(1.0f);
         M = glm::translate(M, glm::vec3(0.0f, -5.0f, -10.0f)); // translate it down so it's at the center of the scene
+        ObjectShader.use();
         ObjectShader.setMat4("M", M);
         ObjectShader.setMat3("M_normal", (glm::mat3(glm::transpose(glm::inverse(M)))));
-        glStencilMask(0x00);
         Plane.Draw(ObjectShader);       // 地板
-        
 
+
+        
         // 带线框的模型们
         float scale = 1.05f;
 
@@ -199,18 +221,21 @@ int main() {
         glStencilMask(0xFF);               // 启用模板缓冲写入
         M = glm::mat4(1.0f);
         M = glm::translate(M, glm::vec3(0.0f, -3.5f, -5.0f));
-        ObjectShader.use();
-        ObjectShader.setMat4("M", M);
-        Sphere.Draw(ObjectShader);
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilMask(0x00);
-        M = glm::mat4(1.0f);
-        M = glm::translate(M, glm::vec3(0.0f, -3.5f, -5.0f));
-        M = glm::scale(M, glm::vec3(scale));
-        OutlineShader.use();
-        OutlineShader.setMat4("M", M);
-        Sphere.Draw(OutlineShader);
-        glStencilMask(0xFF);
+        ReflectShader.use();
+        ReflectShader.setMat4("M", M);
+        ReflectShader.setVec3("camPosWS", camera.Position);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        Sphere.Draw(ReflectShader);
+        // glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        // glStencilMask(0x00);
+        // M = glm::mat4(1.0f);
+        // M = glm::translate(M, glm::vec3(0.0f, -3.5f, -5.0f));
+        // M = glm::scale(M, glm::vec3(scale));
+        // OutlineShader.use();
+        // OutlineShader.setMat4("M", M);
+        // Sphere.Draw(OutlineShader);
+        // glStencilMask(0xFF);
         glClear(GL_STENCIL_BUFFER_BIT);
 
         glStencilFunc(GL_ALWAYS, 1, 0xFF); // 所有片段都更新模板华冲
@@ -249,8 +274,24 @@ int main() {
         glStencilMask(0xFF);
         glClear(GL_STENCIL_BUFFER_BIT);
 
-        glDisable(GL_CULL_FACE);
+        // 天空盒
+        glCullFace(GL_FRONT);
+        glDepthFunc(GL_LEQUAL);
         glStencilMask(0x00);
+        V = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+        SkyBoxShader.use();
+        SkyBoxShader.setMat4("V", V);
+        SkyBoxShader.setMat4("P", P);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        UnitCube.Draw(SkyBoxShader);
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);
+        glCullFace(GL_BACK);
+
+        // 窗户
+        glDisable(GL_CULL_FACE);
+        V = camera.GetViewMatrix();
         WindowShader.use();
         WindowShader.setMat4("V", V);
         WindowShader.setMat4("P", P);
@@ -262,7 +303,6 @@ int main() {
             WindowShader.setMat4("M", M);
             Plane_V.Draw(WindowShader); // 草
         }
-        glStencilMask(0x00);
         glEnable(GL_CULL_FACE);
 
         glfwSwapBuffers(window);    // 交换缓冲
@@ -370,6 +410,38 @@ unsigned int loadTexture(char const *path)
         std::cout << "Texture failed to load at path: " << path << std::endl;
         stbi_image_free(data);
     }
+
+    return textureID;
+}
+
+// 加载Cubemap函数
+unsigned int loadCubemap(vector<std::string> faces)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++)
+    {
+        unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
     return textureID;
 }
