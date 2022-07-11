@@ -1,5 +1,5 @@
 {
-  "cssTheme": "Primary",
+  "cssTheme": "Blue Topaz",
   "theme": "moonstone",
   "enabledCssSnippets": [
     "auto-fade-control",
@@ -11,5 +11,5 @@
     "typora-like-editing",
     "custom"
   ],
-  "baseFontSize": 21
+  "baseFontSize": 19
 }

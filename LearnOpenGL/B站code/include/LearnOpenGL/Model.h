@@ -44,6 +44,12 @@ public:
             meshes[i].Draw(shader);
     }
 
+    void DrawInst(Shader &shader, int instAmount)
+    {
+        for (unsigned int i = 0; i < meshes.size(); i++)
+            meshes[i].DrawInst(shader, instAmount);
+    }
+
 private:
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(string const &path)
@@ -224,8 +230,8 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

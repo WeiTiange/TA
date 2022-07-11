@@ -6,12 +6,24 @@
       {
         "id": "724c89023f6d5636",
         "type": "leaf",
+        "dimension": 88.46153846153845,
         "state": {
           "type": "markdown",
           "state": {
             "file": "LearnOpenGL/OpenGL_高级功能.md",
-            "mode": "source",
+            "mode": "preview",
             "source": false
+          }
+        }
+      },
+      {
+        "id": "7de818df3551c749",
+        "type": "leaf",
+        "dimension": 11.538461538461538,
+        "state": {
+          "type": "outline",
+          "state": {
+            "file": "LearnOpenGL/OpenGL_高级功能.md"
           }
         }
       }
@@ -40,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#version",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -48,24 +60,40 @@
                 "sortOrder": "alphabetical"
               }
             }
+          },
+          {
+            "id": "7b8dfc984db4bbca",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
           }
         ]
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "6c98927e5491f4ca",
     "type": "split",
     "children": [
       {
-        "id": "ea4ef8b81c3df600",
+        "id": "24f48704473ba8f2",
         "type": "tabs",
-        "dimension": 38.81748071979435,
         "children": [
           {
-            "id": "194b7fc013f5706d",
+            "id": "59fc075187b9f666",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {}
+            }
+          },
+          {
+            "id": "8052dbc8643907c5",
             "type": "leaf",
             "state": {
               "type": "backlink",
@@ -82,38 +110,31 @@
             }
           },
           {
-            "id": "1019a51c34dfd069",
-            "type": "leaf",
-            "state": {
-              "type": "calendar",
-              "state": {}
-            }
-          },
-          {
-            "id": "9a35d2ff3d5b1436",
+            "id": "0e9b3034855688fa",
             "type": "leaf",
             "state": {
               "type": "todo",
               "state": {}
             }
-          }
-        ],
-        "currentTab": 1
-      },
-      {
-        "id": "117e941030dafa8f",
-        "type": "tabs",
-        "dimension": 61.18251928020565,
-        "children": [
+          },
           {
-            "id": "462dd3bca180779f",
+            "id": "94f1b1fb6e92b224",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "tag",
               "state": {
-                "file": "图形 1.1 - 渲染流水线.md",
-                "mode": "source",
-                "source": false
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "6db5c36a32c4c809",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "LearnOpenGL/OpenGL_高级功能.md"
               }
             }
           }
@@ -127,14 +148,14 @@
   "active": "724c89023f6d5636",
   "lastOpenFiles": [
     "LearnOpenGL/OpenGL_高级功能.md",
-    "LearnOpenGL/4_纹理.md",
+    "LearnOpenGL/5_坐标系统.md",
+    "LearnOpenGL/2_HellowTriangle.md",
+    "LearnOpenGL/LearnOpenGL.pdf",
+    "Assets/OpenGL_透明物体排序2.png",
+    "Assets/OpenGL_几何着色器生成图元.png",
     "LearnOpenGL/OpenGL_渲染.md",
-    "图形 2.4 传统经验光照模型.md",
-    "图形 2.3 HLSL常用函数.md",
     "图形 2.2 模型与材质基础.md",
-    "图形 2.1 - 色彩空间.md",
-    "图形 1.1 - 渲染流水线.md",
-    "LearnOpenGL/6_摄像机.md",
-    "LearnOpenGL/5_坐标系统.md"
+    "LearnOpenGL/B站code/src/Sample/43_normal_mapping/readme.md",
+    "LearnOpenGL/1_HellowWindow.md"
   ]
 }

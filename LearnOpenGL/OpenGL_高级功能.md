@@ -1,6 +1,7 @@
 # OpenGL高级功能
-#深度测试 #模板测试 #混合 #面剔除 
-
+#### 目录
+```toc
+```
 #### 深度测试(Depth Test)
 - ###### 深度缓冲
 	- 深度缓冲用于储存每个片段的**深度值**， 当深度测试(Depth Testing)开启时，OpenGL会将当前渲染片段的深度值与深度缓冲里的深度值进行对比，执行深度测试，如果如果测试通过，深度缓冲的值会更新为新的深度值，如果失败则该片段会被舍弃
@@ -105,16 +106,16 @@
 | GL_EQUAL     | 在片段的模板值**等于**缓冲的模板值时通过测试     |
 | GL_NOTEQUAL  | 在片段的模板值**不等于**缓冲的模板值时通过测试   |
 
-| glStencilOp函数行为 | 描述                                                                     |     |
-| ------------------- | ------------------------------------------------------------------------ | --- |
-| GL_KEEP             | 保存当前储存的模板值                                                     |     |
-| GL_ZERO             | 将模板值设置为0                                                          |     |
-| GL_REPLACE          | 将模板值设置为glStencilFunc函数的**ref**值                               |     |
-| GL_INCR             | 如果模板值小于最大值则将模板值加一                                       |     |
-| GL_INCR_WRAP        | 如果模板值小于最大值则将模板值加一，但如果模板值超过了最大值则归零       |     |
-| GL_DECT             | 如果模板值大于最小值则将模板值减一                                       |     |
-| GL_DECR_WRAP        | 如果模板值大于最小值则将模板值减一 ，但如果模板值小于0则将其设置为最大值 |     |
-| GL_INVERT           | 按**位**翻转当前的模板缓冲值                                                                        |     |
+| glStencilOp函数行为 | 描述                                                                     |   
+| ------------------- | ------------------------------------------------------------------------ | 
+| GL_KEEP             | 保存当前储存的模板值                                                     |     
+| GL_ZERO             | 将模板值设置为0                                                          |     
+| GL_REPLACE          | 将模板值设置为glStencilFunc函数的**ref**值                                    |
+| GL_INCR             | 如果模板值小于最大值则将模板值加一                                      |
+| GL_INCR_WRAP        | 如果模板值小于最大值则将模板值加一，但如果模板值超过了最大值则归零          |
+| GL_DECT             | 如果模板值大于最小值则将模板值减一                                         |
+| GL_DECR_WRAP        | 如果模板值大于最小值则将模板值减一 ，但如果模板值小于0则将其设置为最大值    |
+| GL_INVERT           | 按**位**翻转当前的模板缓冲值                                                                   |
 *默认情况下glStencilOp是设置为(GL_KEEP, GL_KEEP,  GL_KEEP)的，即不论任何测试的结果是如何，模板缓冲都会保留他的值。默认的行为不会更新模板缓冲，所以如果想写入模板缓冲的话，需要至少对其中一个选项设置不同的值*
 
 - ###### 模板测试应用
@@ -411,4 +412,121 @@
 	- **gl_VertexID**：输入变量，储存了正在绘制的顶点的ID
 		- 使用<mark>glDrawElements</mark>进行索引渲染时，这个变量会储存正在绘制顶点的当前索引
 		- 使用<mark>glDrawArrays</mark>进行渲染是，这个变量会储存从渲染调用开始的已处理的顶点数量
-- 
+- ###### 片段着色器变量
+	- **gl_FragCoord**：z分量是当前片段的深度值，x和y分量是当前片段的**窗口空间(Window-Space)** 坐标，原点在窗口的左下角。x的范围是\[0，screen width]，y的范围是\[0，screen height]
+		- 根据片段的窗口x位置输出不同的颜色<br>![[OpenGL_gl_FragCoord.png]]
+	- **gl_FrontFacing**：bool变量，如果当前片段是正向面则返回`True`，背向面则返回`False`
+		- 给正向面和背向面上不同的材质<br>![[OpenGL_gl_FrontFacing.png]]
+		- *开了面剔除就看不到被剔除的面了*
+	- **gl_FragDepth**：修改当前片段的深度值，范围是\[0, 1]，这个值会覆盖掉gl_FragCoord.z的深度值，如果着色器没有对gl_FragDepth写入值，那么就会自动用gl_FracCoord.z的值
+		- 写入gl_FragDepth之后将**禁用所有提前深度测试**
+		- **从OpenGL4.2起**， 可以通过在**片段着色器顶部**使用深度条件(Depth Condition)来重新声明gl_FragDepth变量
+			- ![[OpenGL_gl_FragDepth.png]]
+
+| 条件 | 描述                                   |
+| ---------------------- | -------------------------------------- |
+| any                    | 默认值，提前深度测试被禁用             |
+| greater                | 手动输入的深度值只能比gl_FragCoord.z大 |
+| less                   | 手动输入的深度值只能比gl_FragCoord.z小 |
+| unchanged              | 只能将gl_FragCoord.z的值写入gl_FragDepth                                     |
+
+- ###### 接口块
+	- 用于在**顶点着色器**和**片段着色器**之间传递数据
+	- <mark>out</mark>定义了输出数组，<mark>in</mark>定义了输入数组
+	- 片段着色器中的**块名**需要和顶点着色器中的一样(<mark>out/in</mark> 后面跟着的名字)，而整个数组后面的实例名可以是随意的
+	- 顶点着色器<br>![[OpenGL_接口快Vert.png]]
+	- 片段着色器<br>![[OpenGL_接口快Frag.png]]
+- ###### Uniform缓冲对象
+	- 用于定义和储存在多个不同的着色器中都相同的**全局Uniform变量**，如V矩阵和P矩阵
+	- **使用Uniform缓冲对象代替独立的uniform的好处是**
+		- 一次设置很多uniform并让他们在所有着色器中都有用比一个一个设置多个uniform要快很多
+		- 比起在多个着色器中重复修改相同的uniform变量，用uniform缓冲修改一次并对所有着色器都起效更容易
+		- OpenGL限制了它能够处理的uniform数量，当使用Uniform缓冲对象时，由于每个uniform缓冲对象都包含了很多不同的变量，能够设置的uniform变量总数会变多
+	- 只需要在主程序里设置一次相关的Uniform，但是还是手动在每个着色器中设置不同的Uniform
+	- Uniform缓冲对象是一个缓冲，所以通过<mark>glGenBuffers</mark>来创建，将他绑定到<mark>GL_UNIFORM_BUFFER</mark>缓冲目标，并将所有的uniform数据存入缓冲
+		- ![[OpenGL_创建Uniform块缓冲.png]]
+		- OpenGL中定义了一些绑定点(Binding Point)，可以将一个Uniform缓冲链接至绑定点，并把着色器里的Uniform块绑定到相同的绑定点，实现数据的互通
+		- ![[OpenGL_绑定点.png]]
+		- 一个绑定点可以被**多个**着色器里的Uniform块绑定，前提是这些Uniform块的定义是相同的。但是每个绑定点同时只能绑定**一个**Uniform缓冲对象
+		- 先用<mark>glGetUniformBlockIndex</mark>来获取指定着色器中Uniform块的位置值索引，再用<mark>glUniformBlockBinding</mark>来将**着色器中的Uniform块**绑定到绑定点
+			- 将着色器中的`Lights`Uniform块绑定到绑定点**2**<br>![[OpenGL_绑定到绑定点.png]]
+			- *需要对每个着色器都重复这个步骤*
+			- *在OpenGL4.2和之后 的版本，可以在定义Uniform块的时候添加布局标识符，来直接绑定该Uniform块到指定绑定点：
+				- <mark>layout(std140, binding = 2) uniform Lights { ... };</mark>
+		- 之后还需要绑定Uniform缓冲对象到相同的绑定点上，有两种方法
+			- <mark>glBindBufferBase(GL_UNIFORM_BUFFER, 目标绑定点， Uniform缓冲对象)</mark>
+			- <mark>glBindBufferRange(GL_UNIFORM_BUFFER，目标绑定点，Uniform缓冲对象，偏移量，要绑定的变量的大小)</mark>
+				- 这个函数可以把一个Uniform块里的一部分变量绑定到绑定点中
+				- 这个函数可以把多个不同的Uniform块绑定到同一个Uniform缓冲对象上
+		- 最后是把数据添加到Uniform缓冲中
+			- ![[OpenGL_Uniform缓冲添加数据.png]]
+			- *144是该数据的对齐偏移量*
+	- 在着色器里访问uniform块里的数据时，不需要加块名做前缀，直接访问就行
+	- 顶点着色器中的Uniform块<br>![[OpenGL_顶点着色器Uniform块.png]]
+		- <mark>layout (std140)</mark>设置了**Uniform块布局(Uniform Block Layout)**，意味着当前定义的Uniform块对他的内容使用一个特定的内存布局
+- ###### Uniform块布局(Uniform Block Layout)
+	- Uniform块只是一块预留的内存，需要告诉OpenGL内存的哪个部分对应着着色器中的哪个Uniform变量
+	- ![[OpenGL_Uniform块例子.png]]
+		- 每个变量都有一个**基准对齐量(Base Alignment)**，他等于一个变量在Uniform块中所占据的空间(包括填充量)。然后对每个变量在计算他的**对齐偏移量(Aligned Offset)**，他是一个变量从块起始位置开始的字节偏移量。一个变量的对齐偏移量**必须**等于基准对齐量的**倍数**
+		- 前一个变量的基准对齐量+对齐偏移量等于当前变量的对齐偏移量。如果当前变量的对齐偏移量是16而前一个变量相加完的结果是4，那么当前变量的对齐偏移量必须是16，因为对齐偏移量必须是基准偏移量的倍数
+		- 整个Uniform块的大小是最后一个变量的基准对齐量+他的对齐偏移量，在ExampleBlock中这个大小是152 (4 + 148)
+
+| 类型            | 布局规则                                           |
+| --------------- | -------------------------------------------------- |
+| 标量(int, bool) | 每个标量的基准对齐量为N                            |
+| 向量            | 2N或4N。**vec3的基准对齐量是4N**                   |
+| 标量/向量的数组 | 每个元素的基准对齐量与vec4的相同                   |
+| 矩阵            | 储存为列向量的数据，每个向量的基准对齐量与vec4相同 |
+| 结构体          | 等于所有元素根据规则计算后的大小，但会填充到vec4大小的倍数                                                   |
+[OpenGL的Uniform缓冲规范](https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_uniform_buffer_object.txt)
+
+- ###### Uniform缓冲的设置顺序
+	- 创建并绑定Uniform块到绑定点
+	- 创建并绑定Uniform缓冲对象到绑定点
+	- 在合适的位置填充Uniform缓冲数据
+
+#### 几何着色器(Geometry Shader)
+- 几何着色器在顶点和片段着色器之间，**输入是一个图元(点、线、三角形)的所有顶点**
+- 几何着色器可以把这一组顶点变换为完全不同的图元，还可以生成比原来更多的顶点
+- ###### 几何着色器的例子
+	- ![[OpenGL_几何着色器例子.png]]
+	- <mark>layout (points) in;</mark>：声明从顶点着色器输入的图元类型
+		- `points`：GL_POINTS (1)
+		- `lines`：GL_LINES / GL_LINE_STRIP (2)
+		- `line_adjacency`：GL_LINES_ADJACENCY / GL_LINE_STRIP_ADJACENCY (4)
+		- `triangles`：GL_TRIANGLES / GL_TRIANGLES_STRIP / GL_TRIANGLE_FAN (3)
+		- `triangles_adjacency`：GL_TRIANGLES_ADJACENCY / GL_TRIANGLES_STRIP_ADJACENCY (6)
+		- *括号里的数字是 一个图元所包含的最小顶点数*
+	- <mark>layout (line_strip, max_vertices = 2) out;</mark> ：指定了机核着色器输出的图元类型，和他最大能够输出的顶点数量(如果超过了这个值，OpenGL将不会绘制多出的顶点)
+		- `points`
+		- `line_strip`
+		- `triangle_strip`
+	- 几何着色器还需要顶点着色器阶段的输出，该输出是一个接口块，包含了几个变量。**这个接口块是内建变量，不需要创建**
+		- ![[OpenGL_几何着色器接口块.png]]
+	- 之后在**main()** 里使用两个函数来生成新的数据
+		- ![[OpenGL_几何着色器生成图元.png]]
+		- <mark>EmitVertex</mark>：调用时会将当前<mark>gl_Position</mark>中的向量添加到图元中
+		- <mark>EndPrimitive</mark>：调用时所有发射出的(Emitted)顶点都会合成为指定的输出渲染图元。重复调用<mark>EndPrimitive</mark>可以生成多个图元
+		- <mark>gl_in[0]</mark>：0表示的当前顶点在当前图元中的索引。因为几何着色器的输入是一个图元的所有顶点，所以会有多个顶点，通过括号里的数字来索引顶点
+- ###### 几何着色器的一些注意事项
+	-  **几何着色器接受的位置向量是观察空间的坐标**，如果需要在几何着色器中涉及到法线的操作，需要在顶点着色器中把顶点位置和法线变换到观察空间(只乘M和V矩阵)，然后再在几何着色器中乘P矩阵
+	- <mark>layout (points) in</mark>里的图元选项是在**主程序**里的DrawCall设置的，而<mark>layout (line_strip, max_vertices = 2) out</mark>里的图元选项决定了整个着色器最后的输出的是什么图元
+	- [TA百人的几何着色器和曲面细分](https://zhuanlan.zhihu.com/p/479792793)
+
+#### 实例化(Instancing)
+- 用于绘制大量相同模型的场景(模型相同，这是进行了不同的世界空间变换)，如草、植被、粒子。**基本上只要场景中有很多重复的形状，都能使用实例化渲染来提高性能**
+- 一次性把模型数据发给GPU，然后通过<mark>glDrawArraysInstanced</mark>或者<mark>glDrawElementInstanced</mark>来让GPU进行实例化渲染，GPU会直接渲染这些实例，而不用不断的和CPU进行通信
+	- 这两个函数相较于原版，需要一个额外的叫做**实例数量**的额外参数
+- 使用实例化渲染的时候，顶点着色器里有一个叫做<mark>gl_InstanceID</mark>的内建变量，在实例化渲染调用时，<mark>gl_InstanceID</mark>会从0开始计数，在每个实例被渲染的时候加1
+- ###### 实例化数组
+	- 使用**实例化数组(Instanced Array)** 来避免在渲染非常大量的实例化渲染的时候超过能发给着色器的Uniform的上限
+	- 实例化数组被定义为一个**顶点属性**，只有在顶点着色器渲染一个新的实例时才会更新
+	- 通过<mark>glVertexAttribDivisor(2, 1)</mark>来设置什么时候该更新顶点属性的内容至下一组数据
+		- 第一个参数是需要更新的顶点属性的**location**
+		- 第二个参数是属性除数(Attribute Divisor)
+			- `0`：每次顶点着色器运行的时候更新
+			- `1`：每次渲染新一个实例的时候更新
+			- `2`：每两次渲染一个新实例的时候更新
+			- `n`：每**n**次渲染一个新实例的时候更新
+	- 在顶点着色器中使用实例化数组传入矩阵的时候，由于一个顶点属性最大只支持vec4的大小，mat4的矩阵需要在VAO里被拆成4个vec4的向量，每一个向量使用一个顶点属性位置
+	- 
