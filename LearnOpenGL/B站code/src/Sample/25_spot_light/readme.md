@@ -4,7 +4,7 @@
 
 **圆锥边缘**
 
-![image-20211110115021709](images/image-20211110115021709.png)
+![image-20211110115021709](image-20211110115021709.png)
 
 ```glsl
 #version 330 core
@@ -87,7 +87,7 @@ void main() {
 
 **边缘软化**
 
-![image-20211110153757340](images/image-20211110153757340.png)
+![image-20211110153757340](image-20211110153757340.png)
 
 ```glsl
 float theta = dot(lightDir, normalize(-light.direction));

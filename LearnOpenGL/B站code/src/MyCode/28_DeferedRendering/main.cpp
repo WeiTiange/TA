@@ -99,7 +99,8 @@ int main() {
     glViewport(0, 0, scrWidth, scrHeight);
 
     // -----模型加载-----
-    Model Cube("./Assets/Mesh/TestScene/UnitCube.obj");
+    Model Cube("./Assets/Mesh/TestScene/Cube.obj");
+    Model Sphere("./Assets/Mesh/TestScene/Sphere.obj");
 
     // -----创建Shader-----
     Shader GeometryShader("./src/MyCode/28_DeferedRendering/Shaders/Geometry.vert", "./src/MyCode/28_DeferedRendering/Shaders/Geometry.frag");
@@ -226,7 +227,11 @@ int main() {
             M = glm::translate(M, objectPositions[i]);
             M = glm::scale(M, glm::vec3(1.0f));
             GeometryShader.setMat4("M", M);
-            renderCube();
+            if (i % 2 == 0) {
+                Cube.Draw(GeometryShader);
+            } else{
+                Sphere.Draw(GeometryShader);
+            }
         }
 
         // Pass 2

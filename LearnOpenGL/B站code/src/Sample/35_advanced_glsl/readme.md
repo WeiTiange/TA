@@ -16,7 +16,7 @@
 gl_PointSize = gl_Position.z;
 ```
 
-![image-20211117110211164](images/image-20211117110211164.png)
+![image-20211117110211164](image-20211117110211164.png)
 
 - gl_VertexID ：输入变量，存储正在绘制顶点的当前索引
 
@@ -39,7 +39,7 @@ gl_PointSize = gl_Position.z;
   }
 ```
 
-![image-20211117111553892](images/image-20211117111553892.png)
+![image-20211117111553892](image-20211117111553892.png)
 
 #### gl_FrontFacing
 
@@ -57,7 +57,7 @@ gl_PointSize = gl_Position.z;
   FragColor = vec4(result, 1.0);
 ```
 
-![image-20211117113439571](images/image-20211117113439571.png)
+![image-20211117113439571](image-20211117113439571.png)
 
 #### gl_FragDepth
 
@@ -201,7 +201,7 @@ layout (std140) uniform Matrices
    glBindBuffer(GL_UNIFORM_BUFFER, 0);
    ```
 
-![image-20211117155043638](images/image-20211117155043638.png)
+![image-20211117155043638](image-20211117155043638.png)
 
 **优点**
 

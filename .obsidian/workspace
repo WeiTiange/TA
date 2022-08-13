@@ -4,13 +4,13 @@
     "type": "split",
     "children": [
       {
-        "id": "724c89023f6d5636",
+        "id": "11723fc0f8d8bba7",
         "type": "leaf",
         "state": {
           "type": "markdown",
           "state": {
-            "file": "LearnOpenGL/OpenGL_高级光照.md",
-            "mode": "source",
+            "file": "LearnOpenGL/5_坐标系统.md",
+            "mode": "preview",
             "source": false
           }
         }
@@ -40,7 +40,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "gl_in",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -88,7 +88,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "LearnOpenGL/OpenGL_高级光照.md"
+                "file": "LearnOpenGL/5_坐标系统.md"
               }
             }
           },
@@ -114,7 +114,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "LearnOpenGL/OpenGL_高级光照.md",
+                "file": "LearnOpenGL/5_坐标系统.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -135,23 +135,41 @@
           }
         ],
         "currentTab": 2
+      },
+      {
+        "id": "9dca75bc97ce2479",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "724c89023f6d5636",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "TA总结.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
       }
     ],
     "direction": "horizontal",
     "width": 361.5,
     "collapsed": true
   },
-  "active": "724c89023f6d5636",
+  "active": "11723fc0f8d8bba7",
   "lastOpenFiles": [
     "LearnOpenGL/OpenGL_高级功能.md",
+    "原神卡渲.md",
+    "TA总结.md",
     "LearnOpenGL/OpenGL_高级光照.md",
-    "LearnOpenGL/4_纹理.md",
-    "LearnOpenGL/OpenGL_渲染.md",
-    "图形 2.6 伽马校正.md",
-    "未命名.md",
+    "LearnOpenGL/PBR.md",
+    "LearnOpenGL/B站code/src/Sample/36_geometry_shader/readme.md",
+    "Profolio.md",
     "LearnOpenGL/5_坐标系统.md",
-    "LearnOpenGL/2_HellowTriangle.md",
-    "LearnOpenGL/LearnOpenGL.pdf",
-    "Assets/OpenGL_透明物体排序2.png"
+    "未命名.md",
+    "渲染方程.md"
   ]
 }

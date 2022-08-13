@@ -103,9 +103,9 @@ void main() {
 
 **效果**
 
-![image-20211115155617706](images/image-20211115155617706.png)
+![image-20211115155617706](image-20211115155617706.png)
 
-![image-20211115155812499](images/image-20211115155812499.png)
+![image-20211115155812499](image-20211115155812499.png)
 
 ```glsl
 #version 330 core
@@ -121,7 +121,7 @@ void main() {
 }
 ```
 
-![image-20211115155854879](images/image-20211115155854879.png)
+![image-20211115155854879](image-20211115155854879.png)
 
 ## 后期处理
 
@@ -133,7 +133,7 @@ vec3 texColor = 1.0 - texture(screenTexture, outTexCoord).rgb;
 FragColor = vec4(texColor, 1.0);
 ```
 
-![image-20211115160432887](images/image-20211115160432887.png)
+![image-20211115160432887](image-20211115160432887.png)
 
 ### 灰度
 
@@ -143,13 +143,13 @@ float average = 0.2126 * texColor.r + 0.7152 * texColor.g + 0.0722 * texColor.b;
 FragColor = vec4(vec3(average), 1.0);
 ```
 
-![image-20211115160721084](images/image-20211115160721084.png)
+![image-20211115160721084](image-20211115160721084.png)
 
 ### 核效果
 
 #### 锐化
 
-![image-20211115162032054](images/image-20211115162032054.png)
+![image-20211115162032054](image-20211115162032054.png)
 
 ```glsl
 #version 330 core
@@ -186,11 +186,11 @@ void main() {
 }
 ```
 
-![image-20211115161414102](images/image-20211115161414102.png)
+![image-20211115161414102](image-20211115161414102.png)
 
 #### 模糊
 
-![image-20211115162012805](images/image-20211115162012805.png)
+![image-20211115162012805](image-20211115162012805.png)
 
 ```glsl
 float kernel[9] = float[](
@@ -200,11 +200,11 @@ float kernel[9] = float[](
 );
 ```
 
-![image-20211115161721686](images/image-20211115161721686.png)
+![image-20211115161721686](image-20211115161721686.png)
 
 #### 显示边缘
 
-![image-20211115161939051](images/image-20211115161939051.png)
+![image-20211115161939051](image-20211115161939051.png)
 
 ```glsl
   float kernel[9] = float[] (
@@ -214,7 +214,7 @@ float kernel[9] = float[](
   );
 ```
 
-![image-20211115161929017](images/image-20211115161929017.png)
+![image-20211115161929017](image-20211115161929017.png)
 
 ## 参考
 

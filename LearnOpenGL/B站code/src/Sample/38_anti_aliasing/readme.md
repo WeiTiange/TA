@@ -4,7 +4,7 @@
 
 **锯齿**
 
-![image-20211119144131619](images/image-20211119144131619.png)
+![image-20211119144131619](image-20211119144131619.png)
 
 ### MSAA
 
@@ -18,7 +18,7 @@ glfwWindowHint(GLFW_SAMPLES, 4);
 glEnable(GL_MULTISAMPLE);
 ```
 
-![image-20211119151653989](images/image-20211119151653989.png)
+![image-20211119151653989](image-20211119151653989.png)
 
 ### 离屏MSAA
 

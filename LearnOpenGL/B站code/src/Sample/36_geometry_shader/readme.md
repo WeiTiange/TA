@@ -99,7 +99,7 @@ void main() {
 }
 ```
 
-![image-20211117184622374](images/image-20211117184622374.png)
+![image-20211117184622374](image-20211117184622374.png)
 
 ### 爆破物体
 
@@ -125,15 +125,15 @@ vec4 explode(vec4 position, vec3 normal)
 }
 ```
 
-![image-20211118105540181](images/image-20211118105540181.png)
+![image-20211118105540181](image-20211118105540181.png)
 
 **参考**：https://learnopengl-cn.github.io/04%20Advanced%20OpenGL/09%20Geometry%20Shader/#_4
 
 ### 法向量可视化
 
-![image-20211118114310556](images/image-20211118114310556.png)
+![image-20211118114310556](image-20211118114310556.png)
 
-![image-20211118140254815](images/image-20211118140254815.png)
+![image-20211118140254815](image-20211118140254815.png)
 
 ## 参考
 

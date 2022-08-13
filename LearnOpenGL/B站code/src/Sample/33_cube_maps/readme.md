@@ -13,7 +13,7 @@
 | `GL_TEXTURE_CUBE_MAP_POSITIVE_Z` | 后   | pz   |
 | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Z` | 前   | nz   |
 
-![image-20211116112654134](images/image-20211116112654134.png)
+![image-20211116112654134](LearnOpenGL/B站code/src/Sample/33_cube_maps/images/image-20211116112654134.png)
 
 ### 绘制天空盒
 
@@ -73,7 +73,7 @@ glDepthFunc(GL_LESS);
 glEnable(GL_DEPTH_TEST);
 ```
 
-![image-20211116112913275](images/image-20211116112913275.png)
+![image-20211116112913275](image-20211116112913275.png)
 
 ### 移除平移
 
@@ -84,7 +84,7 @@ view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // 移除平移分量
 view = camera.GetViewMatrix();
 ```
 
-![image-20211116113148444](images/image-20211116113148444.png)
+![image-20211116113148444](image-20211116113148444.png)
 
 ## 参考
 

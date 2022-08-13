@@ -1,12 +1,14 @@
 [
   "calendar",
   "obsidian-checklist-plugin",
-  "cm-editor-syntax-highlight-obsidian",
   "obsidian-annotator",
   "table-editor-obsidian",
   "cmenu-plugin",
   "cm-chs-patch",
   "obsidian-html-tags-autocomplete",
   "obsidian-dynamic-toc",
-  "quick-latex"
+  "quick-latex",
+  "drawio-obsidian",
+  "obsidian-codemirror-options",
+  "cm-editor-syntax-highlight-obsidian"
 ]

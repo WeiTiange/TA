@@ -31,7 +31,7 @@ vec3 CalcDirectionLight(DirectionLight light, vec3 normal, vec3 viewDir) {
 
 **效果图**
 
-![image-20211111154409892](images/image-20211111154409892.png)
+![image-20211111154409892](image-20211111154409892.png)
 
 ### 点光
 
@@ -74,7 +74,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
 
 **效果**
 
-![image-20211111154552721](images/image-20211111154552721.png)
+![image-20211111154552721](image-20211111154552721.png)
 
 ### 聚光光源
 
@@ -121,7 +121,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
 
 **效果**
 
-![image-20211111154704545](images/image-20211111154704545.png)
+![image-20211111154704545](image-20211111154704545.png)
 
 ### 整合效果
 
@@ -144,7 +144,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
 
 **效果图**
 
-![image-20211111154831885](images/image-20211111154831885.png)
+![image-20211111154831885](image-20211111154831885.png)
 
 ## 参考
 

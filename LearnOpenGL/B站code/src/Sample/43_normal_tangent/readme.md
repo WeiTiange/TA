@@ -1,10 +1,10 @@
 ## 法线贴图
 
-![image-20211126183600699](images/image-20211126183600699.png)
+![image-20211126183600699](LearnOpenGL/B站code/src/Sample/43_normal_tangent/images/image-20211126183600699.png)
 
 将物体沿X轴旋转90度法线，法线显示的错误
 
-![image-20211203161437976](images/image-20211203161437976.png)
+![image-20211203161437976](LearnOpenGL/B站code/src/Sample/43_normal_tangent/images/image-20211203161437976.png)
 
 ## 切线空间
 
@@ -19,7 +19,7 @@
 - 切线空间时位于三角形表面之上的空间。
 - 使用一个特定的矩阵就能将本地/切线空间中的法线向量转成世界或者视图坐标，使它们转向到最终的贴图表面的方向。
 
-![image-20211208103956734](images/image-20211208103956734.png)
+![image-20211208103956734](image-20211208103956734.png)
 
 ## 参考
 

@@ -4,6 +4,21 @@
       "type": "file",
       "title": "OpenGL_高级功能",
       "path": "LearnOpenGL/OpenGL_高级功能.md"
+    },
+    {
+      "type": "file",
+      "title": "OpenGL_高级光照",
+      "path": "LearnOpenGL/OpenGL_高级光照.md"
+    },
+    {
+      "type": "file",
+      "title": "TA总结",
+      "path": "TA总结.md"
+    },
+    {
+      "type": "file",
+      "title": "日式卡通渲染",
+      "path": "原神卡渲.md"
     }
   ]
 }

@@ -54,7 +54,7 @@ vec3 lightDir = normalize(light.direction);
 
 ### 效果
 
-![image-20211109145342631](images/image-20211109145342631.png)
+![image-20211109145342631](image-20211109145342631.png)
 
 ## 参考
 

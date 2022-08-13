@@ -12,7 +12,7 @@ glEnable(GL_FRAMEBUFFER_SRGB);
 
 启用前后效果对比
 
-![image-20211123151615760](images/image-20211123151615760.png)
+![image-20211123151615760](image-20211123151615760.png)
 
 启用后场景变的更亮，包括背景色也变亮
 
@@ -26,7 +26,7 @@ float gamma = 2.2;
 FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / gamma));
 ```
 
-![image-20211123152221823](images/image-20211123152221823.png)
+![image-20211123152221823](image-20211123152221823.png)
 
 ### 纹理重校
 
@@ -46,7 +46,7 @@ FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / gamma));
 
 前后对比
 
-![image-20211123153451011](images/image-20211123153451011.png)
+![image-20211123153451011](image-20211123153451011.png)
 
 ## 参考
 

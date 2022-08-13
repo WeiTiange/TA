@@ -16,18 +16,18 @@
   glDepthFunc(GL_ALWAYS);
 ```
 
-![image-20211112142045119](images/image-20211112142045119.png)
+![image-20211112142045119](image-20211112142045119.png)
 
 ```glsl
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 ```
 
-![image-20211112142156529](images/image-20211112142156529.png)
+![image-20211112142156529](image-20211112142156529.png)
 
 ## 深度值可视化
 
-![image-20211112144933194](images/image-20211112144933194.png)
+![image-20211112144933194](image-20211112144933194.png)
 
 ```glsl
 float LinearizeDepth(float depth, float near, float far) {
@@ -41,15 +41,15 @@ FragColor = vec4(vec3(depth), 1.0);
 
 
 
-![image-20211112144803803](images/image-20211112144803803.png)
+![image-20211112144803803](image-20211112144803803.png)
 
-![image-20211112144840000](images/image-20211112144840000.png)
+![image-20211112144840000](image-20211112144840000.png)
 
 ## 深度冲突
 
 深度缓冲没有足够的精度来决定两个形状哪个在前面。
 
-![image-20211112145257296](images/image-20211112145257296.png)
+![image-20211112145257296](image-20211112145257296.png)
 
 **解决办法**
 
