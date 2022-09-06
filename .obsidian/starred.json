@@ -19,6 +19,11 @@
       "type": "file",
       "title": "日式卡通渲染",
       "path": "原神卡渲.md"
+    },
+    {
+      "type": "file",
+      "title": "渲染流水线",
+      "path": "渲染流水线.md"
     }
   ]
 }

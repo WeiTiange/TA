@@ -9,8 +9,8 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "LearnOpenGL/5_坐标系统.md",
-            "mode": "preview",
+            "file": "LearnOpenGL/PBR.md",
+            "mode": "source",
             "source": false
           }
         }
@@ -88,7 +88,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "LearnOpenGL/5_坐标系统.md"
+                "file": "LearnOpenGL/PBR.md"
               }
             }
           },
@@ -114,7 +114,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "LearnOpenGL/5_坐标系统.md",
+                "file": "LearnOpenGL/PBR.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -126,7 +126,7 @@
             }
           },
           {
-            "id": "1b2d5956a29be07b",
+            "id": "da22553b9f31696a",
             "type": "leaf",
             "state": {
               "type": "todo",
@@ -144,12 +144,8 @@
             "id": "724c89023f6d5636",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "TA总结.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -161,15 +157,15 @@
   },
   "active": "11723fc0f8d8bba7",
   "lastOpenFiles": [
-    "LearnOpenGL/OpenGL_高级功能.md",
-    "原神卡渲.md",
-    "TA总结.md",
-    "LearnOpenGL/OpenGL_高级光照.md",
-    "LearnOpenGL/PBR.md",
-    "LearnOpenGL/B站code/src/Sample/36_geometry_shader/readme.md",
-    "Profolio.md",
-    "LearnOpenGL/5_坐标系统.md",
-    "未命名.md",
-    "渲染方程.md"
+    "仿原神角色Shader.md",
+    "渲染流水线.md",
+    "TA百人/图形 1.1 - 渲染流水线.md",
+    "Assets/Pasted image 20220706223141.png",
+    "Assets/Pasted image 20220706223357.png",
+    "Assets/Pasted image 20220707200530.png",
+    "Assets/Pasted image 20220707205755.png",
+    "Assets/Pasted image 20220707211828.png",
+    "Pasted image 20220719204202.png",
+    "Pasted image 20220719204554.png"
   ]
 }
